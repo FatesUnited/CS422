@@ -1,0 +1,5 @@
+- United States map on the floor using x y coordinates to map into regions
+  - Once in a region interact with hand to pick a state in that region
+  - Use other body motions to switch between years and types of cars
+  
+  -add a voice activated trigger for each action specified above to give the user options
