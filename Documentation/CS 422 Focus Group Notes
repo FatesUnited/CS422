@@ -1,0 +1,26 @@
+CS 422 Project Focus Group Notes:
+Design Overview:
+-The application will show the graph data for different states and years and also have split information based upon the type of vehicle involved in the crash.
+
+-There will be a map of the United States on the screen (which will be split into 4 regions: BASED ON TIMEZONES) and it will show a dot where your standing with respect to the map.
+	-There will also be a map of the U.S. on the ground for the the user to know what to do.
+
+-The user will wave their hand (or say "select" or "view") and the user will be zoomed into that region in which the user can then choose a state to get data for by either swiping through states or saying the states name.
+
+-You could change vehicle type by saying the type of vehicle
+	-Some sort of motion to swipe between types of vehicles.
+
+-You could change the year by saying the year you would like to change to.
+	-Some sort of motion to swipe between years
+
+-There two different types of data to view:
+	-Number of fatalaties
+	-Number of cars involved in fatalities
+
+Questions to ask during focus group:
+1. Is anything unclear or hard to understand about the visualization design?
+2. What do you like about the visualization design? Is it engaging? Why or why not?
+3. Is anything unclear or hard to understand about the interaction design?
+4. What do you like about the interaction design? Is it engaging? Why or why not?
+5. What type of data would you rather see fatalities or number of cars involved in fatalities?
+6. Would you like to hear car crash sound effects while looking at fatalities statistics?
