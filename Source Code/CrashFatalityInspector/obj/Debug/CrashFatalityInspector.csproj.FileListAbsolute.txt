@@ -1,0 +1,26 @@
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe.config
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.pdb
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csprojResolveAssemblyReference.cache
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\MainWindow.baml
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\MainWindow.g.cs
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\App.g.cs
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector_MarkupCompile.cache
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.g.resources
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.Properties.Resources.resources
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csproj.GenerateResource.Cache
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.exe
+D:\My UIC\Class Notes\CS 422\CrashFatalityInspector\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.pdb
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe.config
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.exe
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.pdb
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.pdb
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csprojResolveAssemblyReference.cache
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\MainWindow.baml
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\MainWindow.g.cs
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\App.g.cs
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector_MarkupCompile.cache
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.g.resources
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.Properties.Resources.resources
+D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csproj.GenerateResource.Cache
