@@ -1,0 +1,21 @@
+﻿<Window x:Class="CrashFatalityInspector.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Crash Fatality Inspector" Height="430" Width="630" MinWidth="630" MinHeight="430" WindowState="Maximized">
+    <Grid>
+        <Label Content="Time Zone" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ComboBoxTimeZone" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label Content="State" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ComboBoxStates" HorizontalAlignment="Left" Margin="10,99,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Vehicle Type" HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ComboBoxVehicleTypes" HorizontalAlignment="Left" Margin="10,157,0,0" VerticalAlignment="Top" Width="120"/>
+        <CheckBox x:Name="CheckBoxByYear" Content="Select data by year" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top"/>
+        <Label Content="Year" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="ComboBoxYears" HorizontalAlignment="Left" Margin="10,271,0,0" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="ButtonViewData" Content="View Data" HorizontalAlignment="Left" Margin="10,0,0,10" Width="120" FontSize="18" FontWeight="Bold" Height="44" VerticalAlignment="Bottom"/>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="147,10,10,10">
+            <Canvas x:Name="CanvasParent"/>
+        </Border>
+
+    </Grid>
+</Window>
