@@ -24,3 +24,5 @@ D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\Cr
 D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.g.resources
 D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.Properties.Resources.resources
 D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csproj.GenerateResource.Cache
+C:\Users\Tom\Dropbox\Homework\Spring 2014\CS 422\Project\CS422\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe.config
+C:\Users\Tom\Dropbox\Homework\Spring 2014\CS 422\Project\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.exe
