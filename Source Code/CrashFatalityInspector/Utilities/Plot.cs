@@ -32,6 +32,7 @@ namespace CrashFatalityInspector.Utilities
         {
             ParentCanvas.Children.Clear();
             List<DataBubble> DataBubbles = new List<DataBubble>();
+            //New list to store coordinates to prevent overlapping
             double canvasWidth = ParentCanvas.ActualWidth;
             double canvasHeight = ParentCanvas.ActualHeight;
             double maxWHVal = canvasHeight <= canvasWidth ? canvasHeight : canvasWidth;
@@ -44,14 +45,13 @@ namespace CrashFatalityInspector.Utilities
             foreach (KeyValuePair<string, int> kvp in Data)
             {
                 maxDiameter = maxWHVal * (kvp.Value / maxWHVal);// +kvp.Value;
-                // Create the data bubble ellipse object
                 Ellipse el = new Ellipse();
                 el.Width = maxDiameter;
                 el.Height = maxDiameter;
                 byte[] buffer = new byte[4];
                 rand.NextBytes(buffer);
                 SolidColorBrush scb = new SolidColorBrush();
-                scb.Color = Color.FromArgb(buffer[0], buffer[1], buffer[2], buffer[3]);
+                scb.Color = Color.FromRgb(buffer[0], buffer[1], buffer[2]);
                 el.Fill = scb;
                 // Create the data bubble text object
                 Label l = new Label();
@@ -67,10 +67,61 @@ namespace CrashFatalityInspector.Utilities
 
             // Greatest death-rate will appear on top after this...
             IEnumerable<DataBubble> orderedSet = DataBubbles.OrderBy(db => db.Data);
+            List<DataCoordinates> coordList = new List<DataCoordinates>();
             foreach (DataBubble db in orderedSet)
             {
-                double left = rand.NextDouble() * (ParentCanvas.ActualWidth - maxDiameter);
-                double top = rand.NextDouble() * (ParentCanvas.ActualHeight - maxDiameter);
+                double left = 0;
+                double top = 0;
+                double right = 0;
+                double bottom = 0;
+                //Check if list is empty
+                bool listEmpty = !coordList.Any();
+                if (listEmpty == true)
+                {
+                    left = rand.NextDouble() * (ParentCanvas.ActualWidth - maxDiameter);
+                    right = left + db.Bubble.Width;
+                    top = rand.NextDouble() * (ParentCanvas.ActualHeight - maxDiameter);
+                    bottom = top + db.Bubble.Height;
+                    coordList.Add(new DataCoordinates(left, top, left+db.Bubble.Width, top+db.Bubble.Height));
+                }
+                else
+                {
+                    bool goodCoords = false;
+                    while (goodCoords == false)
+                    {
+                        left = rand.NextDouble() * (ParentCanvas.ActualWidth - maxDiameter);
+                        top = rand.NextDouble() * (ParentCanvas.ActualHeight - maxDiameter);
+                        right = left + db.Bubble.Width;
+                        bottom = top + db.Bubble.Height;
+
+                        for (int i = 0; i < coordList.Count(); i++)
+                        {
+                            DataCoordinates coords = coordList.ElementAt(i);
+                            double height = coords.topCoord - coords.bottomCoord;
+                            double width = coords.rightCoord - coords.leftCoord;
+                            if ((left >= coords.leftCoord && left <= coords.rightCoord) || (top >= coords.topCoord && top <= coords.bottomCoord))
+                            {
+                                break;
+                            }
+                            else if ((right >= coords.leftCoord && right <= coords.rightCoord) || (bottom >= coords.topCoord && bottom <= coords.bottomCoord))
+                            {
+                                break;
+                            }
+                            else if ((right >= canvasWidth) || (bottom >= canvasHeight))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                if (i == coordList.Count() - 1)
+                                {
+                                    goodCoords = true;
+                                }
+                            }
+                        }
+                    }
+                    coordList.Add(new DataCoordinates(left, top, left+db.Bubble.Width, top+db.Bubble.Height));
+                }
                 Canvas.SetLeft(db.Bubble, left);
                 Canvas.SetTop(db.Bubble, top);
                 Canvas.SetLeft(db.DataLabel, left);
@@ -92,6 +143,22 @@ namespace CrashFatalityInspector.Utilities
             this.Bubble = Bubble;
             this.DataLabel = DataLabel;
             this.Data = Data;
+        }
+    }
+
+    class DataCoordinates
+    {
+        public double leftCoord { get; set; }
+        public double topCoord { get; set; }
+        public double rightCoord { get; set; }
+        public double bottomCoord { get; set; }
+
+        public DataCoordinates(double leftCoord, double topCoord, double rightCoord, double bottomCoord)
+        {
+            this.leftCoord = leftCoord;
+            this.topCoord = topCoord;
+            this.rightCoord = rightCoord;
+            this.bottomCoord = bottomCoord;
         }
     }
 }

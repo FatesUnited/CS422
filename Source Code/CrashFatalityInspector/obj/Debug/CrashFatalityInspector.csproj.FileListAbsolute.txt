@@ -26,3 +26,15 @@ D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\Cr
 D:\My UIC\Class Notes\CS 422\CFI\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csproj.GenerateResource.Cache
 C:\Users\Tom\Dropbox\Homework\Spring 2014\CS 422\Project\CS422\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe.config
 C:\Users\Tom\Dropbox\Homework\Spring 2014\CS 422\Project\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.exe
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe.config
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.exe
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\bin\Debug\CrashFatalityInspector.pdb
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\MainWindow.baml
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\MainWindow.g.cs
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\App.g.cs
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector_MarkupCompile.cache
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.g.resources
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.Properties.Resources.resources
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.csproj.GenerateResource.Cache
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.exe
+C:\Users\HAAMEED\Documents\GitHub\CS422\Source Code\CrashFatalityInspector\obj\Debug\CrashFatalityInspector.pdb
