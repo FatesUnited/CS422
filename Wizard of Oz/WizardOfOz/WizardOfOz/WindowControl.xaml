@@ -1,0 +1,10 @@
+﻿<Window x:Class="WizardOfOz.WindowControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Control" Height="210.638" Width="173.404" ShowInTaskbar="False" ResizeMode="NoResize">
+    <StackPanel>
+        <Button x:Name="ButtonNext" Content="Next" Margin="10,10,10,0" Height="40" FontWeight="Bold" FontSize="16" Click="ButtonNext_Click"/>
+        <Label x:Name="LabelInfo" Content="LabelInfo" Margin="10,40,10,0"/>
+        <Label x:Name="LabelNext" Content="LabelNext" Margin="10,0"/>
+    </StackPanel>
+</Window>
