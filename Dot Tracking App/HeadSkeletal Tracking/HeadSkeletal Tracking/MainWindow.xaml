@@ -7,7 +7,7 @@
             <ImageBrush ImageSource="/images/timezonenew.gif"/>
         </Grid.Background>
         <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center">
-            <Image Name="Image" Width="900" Height="550"/>
+            <Image Name="Image" Width="475" Height="319"/>
         </Viewbox>
     </Grid>
 </Window>

@@ -25,12 +25,12 @@ namespace HeadSkeletal_Tracking
         /// <summary>
         /// Width of output drawing
         /// </summary>
-        private const float RenderWidth = 900.0f;
+        private const float RenderWidth = 600.0f;
 
         /// <summary>
         /// Height of our output drawing
         /// </summary>
-        private const float RenderHeight = 550.0f;
+        private const float RenderHeight = 375.0f;
 
         /// <summary>
         /// Thickness of drawn joint lines
