@@ -1,0 +1,200 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+//
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+//
+using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit;
+using Microsoft.Kinect.Toolkit.Controls;
+
+namespace CrashFatalityInspector.Views
+{
+    class TimeZoneScreen
+    {
+        private Window mainWindow;
+        private KinectSensorChooser sensorChooser;
+        //
+        private Grid grid;
+        private Viewbox viewBox;
+        private Image image;
+        private DrawingGroup drawingGroup;
+        private DrawingImage imageSource;
+        //
+        private static Utilities.WaveGesture gesture = new Utilities.WaveGesture();
+        //
+        private float RenderWidth = 600.0f;
+        private float RenderHeight = 375.0f;
+        private double JointThickness = 3;
+        private double BodyCenterThickness = 10;
+        private double ClipBoundsThickness = 10;
+        private readonly Brush centerPointBrush = Brushes.Blue;
+        private readonly Brush trackedJointBrush = Brushes.Red;
+        private readonly Brush inferredJointBrush = Brushes.Yellow;
+        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 6);
+        private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+        //
+        private int pacificLeft = 0;
+        private int pacificRight = 90;
+        private int mountainLeft = 91;
+        private int mountainRight = 241;
+        private int centralLeft = 242;
+        private int centralRight = 433;
+        private int easternLeft = 434;
+        private int easterRight = 550;
+        //
+
+        public TimeZoneScreen(Window MainWindow, KinectSensorChooser SensorChooser)
+        {
+            // Create the display objects
+            this.grid = CreateGrid();
+            this.viewBox = CreateViewbox();
+            this.image = CreateImage();
+            this.drawingGroup = CreateDrawingGroup();
+            this.imageSource = CreateDrawingImage();
+            this.image.Source = this.imageSource;
+            // Set up the display objects
+            this.viewBox.Child = this.image;
+            this.grid.Children.Add(this.viewBox);
+            // Get the main window and sensor objects
+            this.mainWindow = MainWindow;
+            this.sensorChooser = SensorChooser;
+            // Set up the kinect to track the skeleton
+            this.sensorChooser.Kinect.SkeletonFrameReady += SkeletonFrameReady;
+            gesture.GestureRecognized += GestureRecognized;
+        }
+
+        public void Show()
+        {
+            // Display this screen
+            this.mainWindow.Content = this.grid;
+        }
+
+        private Grid CreateGrid()
+        {
+            Grid grid = new Grid();
+            ImageBrush iBrush = new ImageBrush();
+            iBrush.ImageSource = new BitmapImage(new Uri(Constants.CFI_TIME_ZONE_IMAGE, UriKind.Relative));
+            grid.Background = iBrush;
+            return grid;
+        }
+
+        private Viewbox CreateViewbox()
+        {
+            return new Viewbox();
+        }
+
+        private Image CreateImage()
+        {
+            return new Image();
+        }
+
+        private DrawingGroup CreateDrawingGroup()
+        {
+            return new DrawingGroup();
+        }
+
+        private DrawingImage CreateDrawingImage()
+        {
+            return new DrawingImage(this.drawingGroup);
+        }
+
+        void SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            Skeleton[] skeletons = new Skeleton[0];
+            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+            {
+                if (skeletonFrame != null)
+                {
+                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(skeletons);
+                }
+            }
+            using (DrawingContext dc = this.drawingGroup.Open())
+            {
+                dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                if (skeletons.Length != 0)
+                {
+                    var user = skeletons.Where(u => u.TrackingState == SkeletonTrackingState.Tracked).FirstOrDefault();
+                    if (user != null)
+                    {
+                        gesture.Update(user);
+                    }
+                    foreach (Skeleton skel in skeletons)
+                    {
+                        if (skel.TrackingState == SkeletonTrackingState.Tracked)
+                        {
+                            this.DrawBonesAndJoints(skel, dc);
+                        }
+                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
+                        {
+                            dc.DrawEllipse(
+                            this.centerPointBrush,
+                            null,
+                            this.SkeletonPointToScreen(skel.Position),
+                            BodyCenterThickness,
+                            BodyCenterThickness);
+                        }
+                    }
+                }
+                this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+            }
+        }
+
+        private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
+        {
+            Brush drawBrush = this.trackedJointBrush;
+            drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position), JointThickness * 5, JointThickness * 5);
+        }
+
+        private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
+        {
+            DepthImagePoint depthPoint = this.sensorChooser.Kinect.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
+            //Console.WriteLine("Spine Coordinate: (" + depthPoint.X + "," + depthPoint.Y, ")");
+            return new Point(depthPoint.X, depthPoint.Y);
+        }
+
+        void GestureRecognized(object sender, EventArgs e)
+        {
+            Utilities.WaveGesture wg = (Utilities.WaveGesture)sender;
+            Skeleton skel = wg.skeleton;
+            Point coordinates = this.SkeletonPointToScreen(skel.Joints[JointType.Spine].Position);
+            if (coordinates.X > pacificRight)
+            {
+                if (coordinates.X > mountainRight)
+                {
+                    if (coordinates.X > centralRight)
+                    {
+#if (DEBUG)
+                        Console.WriteLine("BIG DONG IN EASTERN TIME ZONE");
+#endif
+                    }
+                    else
+                    {
+#if (DEBUG)
+                        Console.WriteLine("BIG DONG IN CENTRAL TIME ZONE");
+#endif
+                    }
+                }
+                else
+                {
+#if (DEBUG)
+                    Console.WriteLine("BIG DONG IN MOUNTAIN TIME ZONE");
+#endif
+                }
+            }
+            else
+            {
+#if (DEBUG)
+                Console.WriteLine("BIG DONG IN PACIFIC TIME ZONE");
+#endif
+            }
+        }
+    }
+}
