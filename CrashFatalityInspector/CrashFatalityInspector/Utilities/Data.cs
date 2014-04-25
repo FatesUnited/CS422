@@ -36,6 +36,11 @@ namespace CrashFatalityInspector.Utilities
             Buses = ReadDataFile(ApplicationPath, Constants.BS_DATA_FILE, Constants.BS_DATA_NAME);
             AllFatalities = ReadDataFile(ApplicationPath, Constants.AV_DATA_FILE, Constants.AV_DATA_NAME);
             //
+            FatalityData.Tables.Add(LargeTrucks);
+            FatalityData.Tables.Add(MotorCoaches);
+            FatalityData.Tables.Add(Buses);
+            FatalityData.Tables.Add(AllFatalities);
+            //
             Vehicles = PopulateVehicles(FatalityData);
             Years = PopulateYears(LargeTrucks);
 #if (DEBUG)
@@ -59,7 +64,7 @@ namespace CrashFatalityInspector.Utilities
                         stateData = line.Split(new char[] { ',' });
                         try
                         {
-                            states.Add(new State(stateData[0], stateData[1]));
+                            states.Add(new State(stateData[0], stateData[1], stateData[0] + ".png"));
                         }
                         catch (ArgumentException e)
                         {
@@ -177,6 +182,35 @@ namespace CrashFatalityInspector.Utilities
         }
         #endregion
 
+        #region Select Data Methods...
+        public static Dictionary<string, int> SelectDataByStateAndVehicleType(string State, string VehicleType)
+        {
+            DataTable table = new DataTable();
+            DataTableCollection dtc = FatalityData.Tables;
+            object[] rowData = null;
+            foreach (DataTable dt in dtc)
+            {
+                if (dt.TableName.Equals(VehicleType))
+                {
+                    table = dt;
+                }
+            }
+            foreach (DataRow row in table.Rows)
+            {
+                if (row[0].ToString().Equals(State))
+                {
+                    rowData = row.ItemArray;
+                }
+            }
+            Dictionary<string, int> data = new Dictionary<string, int>();
+            for (int i = 0; i < rowData.Length - 1; i++)
+            {
+                data.Add(Years[i], (int)rowData[i + 1]);
+            }
+            return data;
+        }
+        #endregion
+
         #region Data Debug Methods...
         public static void PrintDataTableToConsole(DataTable Table)
         {
@@ -215,6 +249,7 @@ namespace CrashFatalityInspector.Utilities
             Console.WriteLine();
             Console.WriteLine("Fatalities in " + State + " in the vehicle type: " + VType);
             PrintTheData(Data, 6);
+            Console.WriteLine();
         }
 
         public static void PrintDataByStateAndYearToConsole(Dictionary<string, int> Data, string State, string Year)
@@ -246,7 +281,9 @@ namespace CrashFatalityInspector.Utilities
         public string Name { get; set; }
         public Constants.TimeZones TimeZone { get; set; }
 
-        public State(string Name, string TimeZone)
+        public string Image { get; set; }
+
+        public State(string Name, string TimeZone, string Image)
         {
             this.Name = Name;
             if (TimeZone.Equals(Constants.TimeZones.Pacific.ToString()))
@@ -265,6 +302,7 @@ namespace CrashFatalityInspector.Utilities
             {
                 this.TimeZone = Constants.TimeZones.Eastern;
             }
+            this.Image = Image;
         }
 
         public override string ToString()

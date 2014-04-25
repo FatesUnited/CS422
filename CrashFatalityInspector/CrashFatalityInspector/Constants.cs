@@ -21,8 +21,30 @@ namespace CrashFatalityInspector
         public const string AV_DATA_FILE = "/Data/AllFatalities.csv";
         //
         public const string LT_DATA_NAME = "Large Trucks";
-        public const string MC_DATA_NAME = "MotorCoaches";
+        public const string MC_DATA_NAME = "Motor Coaches";
         public const string BS_DATA_NAME = "Buses";
         public const string AV_DATA_NAME = "All Vehicles";
+        //
+        [Flags]
+        public enum ViewNames : int { TitleScreen, TimeZoneScreen, StatesScreen, VehicleScreen, DataScreen };
+        //
+        public const string CFI_TITLE_IMAGE = @"Images/TitleScreenBackground.png";
+        public const string CFI_TITLE_BUTTON_LABEL = "start";
+        //
+        public const string CFI_BUTTON_ZONE_IMAGE = @"Images/TimeZoneBackground.png";
+        //
+        public const string CFI_STATES_IMAGE = @"Images/GenericBackground.png";
+        public const string CFI_STATES_PACIFIC_IMAGE = @"Images/PacificTimeZone.png";
+        public const string CFI_STATES_MOUNTAIN_IMAGE = @"Images/MountainTimeZone.png";
+        public const string CFI_STATES_CENTRAL_IMAGE = @"Images/CentralTimeZone.png";
+        public const string CFI_STATES_EASTERN_IMAGE = @"Images/EasternTimeZone.png";
+        //
+        public const string CFI_VEHICLES_IMAGE = @"Images/GenericBackground.png";
+        public const string VEHICLE_TYPE_LARGE_TRUCKS = "Large Trucks";
+        public const string VEHICLE_TYPE_MOTOR_COACHES = "Motor Coaches";
+        public const string VEHICLE_TYPE_BUSES = "Buses";
+        public const string VEHICLE_TYPE_ALL_VEHICLES = "All Vehicles";
+        //
+        public const string CFI_DATA_IMAGE = @"Images/GenericBackground.png";
     }
 }

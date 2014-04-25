@@ -429,7 +429,7 @@ namespace Microsoft.Kinect.Toolkit
                     }
                     catch (InvalidOperationException)
                     {
-                        // TODO: In multi-proc scenarios, this is getting thrown at the start before we see IOException.  Need to understand.
+                        // In multi-proc scenarios, this is getting thrown at the start before we see IOException.  Need to understand.
                         // some other app has this sensor.
                         newStatus |= ChooserStatus.SensorConflict;
                         continue;

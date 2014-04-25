@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 //
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
@@ -20,13 +21,15 @@ namespace CrashFatalityInspector.Views
         private Window mainWindow;
         private KinectSensorChooser sensorChooser;
         //
-        private DockPanel content;
+        private Grid content;
         private KinectRegion kRegion;
         //
-        private Label title;
+        private Grid infoGrid;
         private KinectScrollViewer statesKSV;
+        private Grid buttonGrid;
         //
         private List<Utilities.State> states;
+        private Constants.TimeZones timeZone;
 
         public StatesScreen(Window MainWindow, KinectSensorChooser SensorChooser, Constants.TimeZones TimeZone)
         {
@@ -34,6 +37,7 @@ namespace CrashFatalityInspector.Views
             this.mainWindow = MainWindow;
             this.sensorChooser = SensorChooser;
             // Populate the states based on TimeZone parameter
+            this.timeZone = TimeZone;
             this.states = PopulateStates(TimeZone);
 #if (DEBUG)
             Console.WriteLine(TimeZone.ToString() + " states loading...");
@@ -44,15 +48,18 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine("..." + TimeZone.ToString() + " states loaded!");
 #endif
             // Initialize display containers
-            this.content = CreateDockPanel();
-            this.kRegion = CreateKinectRegion();
-            // Initialize display elements
-            this.title = CreateLabel();
-            this.statesKSV = CreateKinectScrollViewer();
+            CreateContentGrid();
+            CreateKinectRegion();
+            CreateInfoGrid();
+            CreateKinectScrollViewer();
             // Set up the display
+            Grid.SetColumn(this.infoGrid, 0);
+            Grid.SetRow(this.infoGrid, 0);
+            this.content.Children.Add(this.infoGrid);
             this.kRegion.Content = this.statesKSV;
-            this.content.Children.Add(title);
-            this.content.Children.Add(kRegion);
+            Grid.SetColumn(this.kRegion, 0);
+            Grid.SetRow(this.kRegion, 1);
+            this.content.Children.Add(this.kRegion);
             // Bind the Kinect sensor
             var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
             BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
@@ -77,74 +84,190 @@ namespace CrashFatalityInspector.Views
             return states;
         }
 
-        private DockPanel CreateDockPanel()
+        private void CreateContentGrid()
         {
-            DockPanel container = new DockPanel();
-            container.Name = Constants.ViewNames.StatesScreen.ToString();
-            container.SizeChanged += ContentSizeChanged;
-            return container;
+            this.content = new Grid();
+            this.content.Name = Constants.ViewNames.StatesScreen.ToString();
+            ImageBrush iBrush = new ImageBrush();
+            iBrush.ImageSource = new BitmapImage(new Uri(Constants.CFI_STATES_IMAGE, UriKind.Relative));
+            this.content.Background = iBrush;
+            ColumnDefinition cd = new ColumnDefinition();
+            this.content.ColumnDefinitions.Add(cd);
+            RowDefinition top = new RowDefinition();
+            RowDefinition bot = new RowDefinition();
+            this.content.RowDefinitions.Add(top);
+            this.content.RowDefinitions.Add(bot);
+            this.content.SizeChanged += ContentGridSizeChanged;
         }
 
-        void ContentSizeChanged(object sender, SizeChangedEventArgs e)
+        void ContentGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.title.FontSize = this.content.ActualHeight / 10;
+            ColumnDefinition left = this.infoGrid.ColumnDefinitions[0];
+            left.Width = new GridLength(20 + this.mainWindow.ActualWidth / 4.8611111111111111111111111111111);
+            Grid dataGrid = (Grid)this.infoGrid.Children[1];
+            Label regionLabel = (Label)dataGrid.Children[0];
+            regionLabel.FontSize = this.mainWindow.ActualHeight / 10;
+            Label regionInfo = (Label)dataGrid.Children[1];
+            regionInfo.FontSize = this.mainWindow.ActualHeight / 23.333333333333333333333333333333;
+            foreach (KinectTileButton ktb in this.buttonGrid.Children)
+            {
+                ktb.MaxHeight = this.mainWindow.ActualHeight / 3.75;
+                ktb.MaxWidth = this.mainWindow.ActualHeight / 3.75;
+                ktb.FontSize = this.mainWindow.ActualHeight / 22;
+            }
         }
 
-        private KinectRegion CreateKinectRegion()
+        private void CreateKinectRegion()
         {
-            return new KinectRegion();
+            this.kRegion = new KinectRegion();
         }
 
-        private Label CreateLabel()
+        private void CreateInfoGrid()
         {
-            Label label = new Label();
-            label.Content = Constants.CFI_STATES_LABEL;
-            label.Foreground = Brushes.White;
-            label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-            label.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
-            DockPanel.SetDock(label, Dock.Top);
-            return label;
-        }
-
-        private KinectScrollViewer CreateKinectScrollViewer()
-        {
-            KinectScrollViewer ksv = new KinectScrollViewer();
-#if (DEBUG)
-            ksv.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
-#else
-            ksv.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-#endif
-            ksv.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            this.infoGrid = new Grid();
+            ColumnDefinition left = new ColumnDefinition();
+            ColumnDefinition right = new ColumnDefinition();
+            RowDefinition rd = new RowDefinition();
             //
-            Grid g = new Grid();
-            g.ShowGridLines = true;
-            g.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-            g.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            for (int i = 0; i < this.states.Count; i++)
+            left.Width = new GridLength(20 + this.mainWindow.ActualWidth / 4.8611111111111111111111111111111);
+            //
+            this.infoGrid.ColumnDefinitions.Add(left);
+            this.infoGrid.ColumnDefinitions.Add(right);
+            this.infoGrid.RowDefinitions.Add(rd);
+            //
+            Image regionImage = new Image();
+            BitmapImage regionBitmap = new BitmapImage();
+            regionBitmap.BeginInit();
+            if (this.timeZone == Constants.TimeZones.Pacific)
+            {
+                regionBitmap.UriSource = new Uri(Constants.CFI_STATES_PACIFIC_IMAGE, UriKind.Relative);
+            }
+            if (this.timeZone == Constants.TimeZones.Mountain)
+            {
+                regionBitmap.UriSource = new Uri(Constants.CFI_STATES_MOUNTAIN_IMAGE, UriKind.Relative);
+            }
+            if (this.timeZone == Constants.TimeZones.Central)
+            {
+                regionBitmap.UriSource = new Uri(Constants.CFI_STATES_CENTRAL_IMAGE, UriKind.Relative);
+            }
+            if (this.timeZone == Constants.TimeZones.Eastern)
+            {
+                regionBitmap.UriSource = new Uri(Constants.CFI_STATES_EASTERN_IMAGE, UriKind.Relative);
+            }
+            regionBitmap.EndInit();
+            regionImage.Source = regionBitmap;
+            regionImage.Stretch = Stretch.Uniform;
+            regionImage.Margin = new Thickness(20, 0, 0, 0);
+            //
+            Grid.SetColumn(regionImage, 0);
+            Grid.SetRow(regionImage, 0);
+            regionImage.HorizontalAlignment = HorizontalAlignment.Left;
+            this.infoGrid.Children.Add(regionImage);
+            //
+            Grid dataGrid = new Grid();
+            ColumnDefinition cd = new ColumnDefinition();
+            dataGrid.ColumnDefinitions.Add(cd);
+            RowDefinition top = new RowDefinition();
+            RowDefinition bot = new RowDefinition();
+            dataGrid.RowDefinitions.Add(top);
+            dataGrid.RowDefinitions.Add(bot);
+            //
+            Label regionLabel = new Label();
+            regionLabel.Content = this.timeZone.ToString() + " region _";
+            regionLabel.Margin = new Thickness(0, 0, 20, 0);
+            regionLabel.FontSize = this.mainWindow.ActualHeight / 10;
+            regionLabel.FontFamily = new FontFamily("Veranda");
+            regionLabel.Foreground = Brushes.White;
+            regionLabel.HorizontalAlignment = HorizontalAlignment.Right;
+            regionLabel.VerticalAlignment = VerticalAlignment.Top;
+            Grid.SetColumn(regionLabel, 0);
+            Grid.SetRow(regionLabel, 0);
+            dataGrid.Children.Add(regionLabel);
+            //
+            Label regionInfo = new Label();
+            regionInfo.Content = "+some additional info\r\n+some additional info\r\n+some additional info";
+            regionInfo.FontSize = this.mainWindow.ActualHeight / 23.333333333333333333333333333333;
+            regionInfo.Margin = new Thickness(0, 0, 20, 0);
+            regionInfo.FontFamily = new FontFamily("Veranda");
+            regionInfo.Foreground = Brushes.White;
+            regionInfo.HorizontalAlignment = HorizontalAlignment.Right;
+            regionInfo.VerticalAlignment = VerticalAlignment.Bottom;
+            Grid.SetColumn(regionInfo, 0);
+            Grid.SetRow(regionInfo, 1);
+            dataGrid.Children.Add(regionInfo);
+            //
+            Grid.SetColumn(dataGrid, 1);
+            Grid.SetRow(dataGrid, 0);
+            this.infoGrid.Children.Add(dataGrid);
+        }
+
+        private void CreateKinectScrollViewer()
+        {
+            this.statesKSV = new KinectScrollViewer();
+            this.statesKSV.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+            this.statesKSV.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            //
+            this.buttonGrid = new Grid();
+            for (int j = 0; j < this.states.Count + 1; j++)
             {
                 ColumnDefinition cd = new ColumnDefinition();
-                g.ColumnDefinitions.Add(cd);
+                this.buttonGrid.ColumnDefinitions.Add(cd);
             }
             RowDefinition rd = new RowDefinition();
-            g.RowDefinitions.Add(rd);
-            for (int i = 0; i < this.states.Count; i++)
+            this.buttonGrid.RowDefinitions.Add(rd);
+            int i = 0;
+            for (i = 0; i < this.states.Count; i++)
             {
                 KinectTileButton ktb = new KinectTileButton();
                 ktb.Content = this.states[i];
+                ktb.FontFamily = new FontFamily("Veranda");
+                ktb.MaxHeight = this.mainWindow.ActualHeight / 3.75;
+                ktb.MaxWidth = this.mainWindow.ActualHeight / 3.75;
+                ktb.FontSize = this.mainWindow.ActualHeight / 22;
                 ktb.Click += StateButtonClick;
-                ktb.HorizontalLabelAlignment = System.Windows.HorizontalAlignment.Center;
-                ktb.VerticalLabelAlignment = System.Windows.VerticalAlignment.Center;
+                //
+                ImageBrush iBrush = new ImageBrush();
+                iBrush.ImageSource = new BitmapImage(new Uri(@"Images/States/" + this.states[i].Image, UriKind.Relative));
+                iBrush.Opacity = 0.75;
+                if (iBrush.ImageSource.Width > ktb.Width || iBrush.ImageSource.Height > ktb.Height)
+                {
+                    iBrush.Stretch = Stretch.Uniform;
+                }
+                else
+                {
+                    iBrush.Stretch = Stretch.None;
+                }
+                //
+                ktb.Background = iBrush;
                 ktb.Foreground = Brushes.White;
                 //
                 Grid.SetRow(ktb, 0);
                 Grid.SetColumn(ktb, i);
-                g.Children.Add(ktb);
+                this.buttonGrid.Children.Add(ktb);
             }
-            ksv.Content = g;
-            this.kRegion.Content = ksv;
-            DockPanel.SetDock(this.kRegion, Dock.Bottom);
             //
-            return ksv;
+            KinectTileButton goBackButton = new KinectTileButton();
+            goBackButton.Content = "go back";
+            goBackButton.MaxHeight = this.mainWindow.ActualHeight / 3.75;
+            goBackButton.MaxWidth = this.mainWindow.ActualHeight / 3.75;
+            goBackButton.FontSize = this.mainWindow.ActualHeight / 22;
+            goBackButton.Click += GoBackButtonClick;
+            goBackButton.Foreground = Brushes.White;
+            goBackButton.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            Grid.SetRow(goBackButton, 0);
+            Grid.SetColumn(goBackButton, i + 1);
+            this.buttonGrid.Children.Add(goBackButton);
+            //
+            this.statesKSV.Content = this.buttonGrid;
+        }
+
+        void GoBackButtonClick(object sender, RoutedEventArgs e)
+        {
+#if (DEBUG)
+            Console.WriteLine("User went back to time zone screen!");
+#endif
+            ButtonZonesScreen bzs = new ButtonZonesScreen(this.mainWindow, this.sensorChooser);
+            bzs.Show();
         }
 
         void StateButtonClick(object sender, RoutedEventArgs e)

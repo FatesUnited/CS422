@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 //
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
@@ -20,11 +21,11 @@ namespace CrashFatalityInspector.Views
         private Window mainWindow;
         private KinectSensorChooser sensorChooser;
         //
-        private DockPanel content;
+        private Grid content;
         private KinectRegion kRegion;
-        private Grid buttonGrid;
         //
-        private Label title;
+        private Grid infoGrid;
+        private Grid buttonGrid;
         //
         private Utilities.State state;
 
@@ -36,13 +37,17 @@ namespace CrashFatalityInspector.Views
             // Remember some info
             this.state = State;
             // Initialize display containers
-            this.content = CreateDockPanel();
-            this.kRegion = CreateKinectRegion();
-            // Initialize display elements
-            this.title = CreateLabel();
-            // Set up the display
-            this.content.Children.Add(title);
-            this.content.Children.Add(kRegion);
+            CreateContentGrid();
+            CreateInfoGrid();
+            CreateKinectRegion();
+            //
+            Grid.SetColumn(this.infoGrid, 0);
+            Grid.SetRow(this.infoGrid, 0);
+            this.content.Children.Add(this.infoGrid);
+            //
+            Grid.SetColumn(this.kRegion, 0);
+            Grid.SetRow(this.kRegion, 1);
+            this.content.Children.Add(this.kRegion);
             // Bind the Kinect sensor
             var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
             BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
@@ -54,67 +59,157 @@ namespace CrashFatalityInspector.Views
             this.mainWindow.Content = this.content;
         }
 
-        private DockPanel CreateDockPanel()
+        private void CreateContentGrid()
         {
-            DockPanel container = new DockPanel();
-            container.Name = Constants.ViewNames.StatesScreen.ToString();
-            container.SizeChanged += ContentSizeChanged;
-            return container;
+            this.content = new Grid();
+            this.content.Name = Constants.ViewNames.StatesScreen.ToString();
+            ImageBrush iBrush = new ImageBrush();
+            iBrush.ImageSource = new BitmapImage(new Uri(Constants.CFI_VEHICLES_IMAGE, UriKind.Relative));
+            this.content.Background = iBrush;
+            ColumnDefinition cd = new ColumnDefinition();
+            this.content.ColumnDefinitions.Add(cd);
+            RowDefinition top = new RowDefinition();
+            RowDefinition bot = new RowDefinition();
+            this.content.RowDefinitions.Add(top);
+            this.content.RowDefinitions.Add(bot);
+            this.content.SizeChanged += contentGridSizeChanged;
         }
 
-        void ContentSizeChanged(object sender, SizeChangedEventArgs e)
+        void contentGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.title.FontSize = this.content.ActualHeight / 10;
+            ColumnDefinition left = this.infoGrid.ColumnDefinitions[0];
+            left.Width = new GridLength(20 + this.mainWindow.ActualWidth / 4.8611111111111111111111111111111);
+            Grid dataGrid = (Grid)this.infoGrid.Children[1];
+            Label regionLabel = (Label)dataGrid.Children[0];
+            regionLabel.FontSize = this.mainWindow.ActualHeight / 10;
+            Label regionInfo = (Label)dataGrid.Children[1];
+            regionInfo.FontSize = this.mainWindow.ActualHeight / 23.333333333333333333333333333333;
+            foreach (KinectTileButton ktb in this.buttonGrid.Children)
+            {
+                ktb.MaxHeight = this.mainWindow.ActualHeight / 3.75;
+                ktb.MaxWidth = this.mainWindow.ActualHeight / 3.75;
+                ktb.FontSize = this.mainWindow.ActualHeight / 22;
+            }
         }
 
-        private Label CreateLabel()
+        private void CreateInfoGrid()
         {
-            Label label = new Label();
-            label.Content = Constants.CFI_VEHICLES_LABEL;
-            label.Foreground = Brushes.White;
-            label.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-            label.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
-            DockPanel.SetDock(label, Dock.Top);
-            return label;
+            this.infoGrid = new Grid();
+            ColumnDefinition left = new ColumnDefinition();
+            ColumnDefinition right = new ColumnDefinition();
+            RowDefinition rd = new RowDefinition();
+            //
+            left.Width = new GridLength(20 + this.mainWindow.ActualWidth / 4.8611111111111111111111111111111);
+            //
+            this.infoGrid.ColumnDefinitions.Add(left);
+            this.infoGrid.ColumnDefinitions.Add(right);
+            this.infoGrid.RowDefinitions.Add(rd);
+            //
+            Image stateImage = new Image();
+            BitmapImage stateBitmap = new BitmapImage();
+            stateBitmap.BeginInit();
+            stateBitmap.UriSource = new Uri(@"Images/States/" + this.state.Image, UriKind.Relative);
+            stateBitmap.EndInit();
+            stateImage.Source = stateBitmap;
+            stateImage.Stretch = Stretch.Uniform;
+            stateImage.Margin = new Thickness(20, 0, 0, 0);
+            //
+            Grid.SetColumn(stateImage, 0);
+            Grid.SetRow(stateImage, 0);
+            stateImage.HorizontalAlignment = HorizontalAlignment.Left;
+            this.infoGrid.Children.Add(stateImage);
+            //
+            Grid dataGrid = new Grid();
+            ColumnDefinition cd = new ColumnDefinition();
+            dataGrid.ColumnDefinitions.Add(cd);
+            RowDefinition top = new RowDefinition();
+            RowDefinition bot = new RowDefinition();
+            dataGrid.RowDefinitions.Add(top);
+            dataGrid.RowDefinitions.Add(bot);
+            //
+            Label regionLabel = new Label();
+            regionLabel.Content = this.state.Name + " _";
+            regionLabel.Margin = new Thickness(0, 0, 20, 0);
+            regionLabel.FontSize = this.mainWindow.ActualHeight / 10;
+            regionLabel.FontFamily = new FontFamily("Veranda");
+            regionLabel.Foreground = Brushes.White;
+            regionLabel.HorizontalAlignment = HorizontalAlignment.Right;
+            regionLabel.VerticalAlignment = VerticalAlignment.Top;
+            Grid.SetColumn(regionLabel, 0);
+            Grid.SetRow(regionLabel, 0);
+            dataGrid.Children.Add(regionLabel);
+            //
+            Label regionInfo = new Label();
+            regionInfo.Content = "+some additional info\r\n+some additional info\r\n+some additional info";
+            regionInfo.FontSize = this.mainWindow.ActualHeight / 23.333333333333333333333333333333;
+            regionInfo.Margin = new Thickness(0, 0, 20, 0);
+            regionInfo.FontFamily = new FontFamily("Veranda");
+            regionInfo.Foreground = Brushes.White;
+            regionInfo.HorizontalAlignment = HorizontalAlignment.Right;
+            regionInfo.VerticalAlignment = VerticalAlignment.Bottom;
+            Grid.SetColumn(regionInfo, 0);
+            Grid.SetRow(regionInfo, 1);
+            dataGrid.Children.Add(regionInfo);
+            //
+            Grid.SetColumn(dataGrid, 1);
+            Grid.SetRow(dataGrid, 0);
+            this.infoGrid.Children.Add(dataGrid);
         }
 
-        private KinectRegion CreateKinectRegion()
+        private void CreateKinectRegion()
         {
             this.kRegion = new KinectRegion();
             this.buttonGrid = new Grid();
-            this.buttonGrid.ShowGridLines = true;
-            ColumnDefinition leftColumn = new ColumnDefinition();
-            ColumnDefinition rightColumn = new ColumnDefinition();
-            this.buttonGrid.ColumnDefinitions.Add(leftColumn);
-            this.buttonGrid.ColumnDefinitions.Add(rightColumn);
-            RowDefinition topRow = new RowDefinition();
-            RowDefinition bottomRow = new RowDefinition();
-            this.buttonGrid.RowDefinitions.Add(topRow);
-            this.buttonGrid.RowDefinitions.Add(bottomRow);
+            this.buttonGrid.ShowGridLines = false;
+            for (int i = 0; i < 5; i++)
+            {
+                ColumnDefinition cd = new ColumnDefinition();
+                this.buttonGrid.ColumnDefinitions.Add(cd);
+            }
+            RowDefinition rd = new RowDefinition();
+            this.buttonGrid.RowDefinitions.Add(rd);
+            //
             KinectTileButton largeTrucks = CreateTileButton(Constants.VEHICLE_TYPE_LARGE_TRUCKS);
             KinectTileButton buses = CreateTileButton(Constants.VEHICLE_TYPE_BUSES);
             KinectTileButton motorCoaches = CreateTileButton(Constants.VEHICLE_TYPE_MOTOR_COACHES);
             KinectTileButton allVehicles = CreateTileButton(Constants.VEHICLE_TYPE_ALL_VEHICLES);
+            //
+            KinectTileButton goBackButton = new KinectTileButton();
+            goBackButton.Content = "go back";
+            goBackButton.MaxHeight = this.mainWindow.ActualHeight / 3.75;
+            goBackButton.MaxWidth = this.mainWindow.ActualHeight / 3.75;
+            goBackButton.FontSize = this.mainWindow.ActualHeight / 22;
+            goBackButton.Click += GoBackButtonClick;
+            goBackButton.Foreground = Brushes.White;
+            goBackButton.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            //
             Grid.SetRow(largeTrucks, 0);
             Grid.SetColumn(largeTrucks, 0);
             Grid.SetRow(buses, 0);
             Grid.SetColumn(buses, 1);
-            Grid.SetRow(motorCoaches, 1);
-            Grid.SetColumn(motorCoaches, 0);
-            Grid.SetRow(allVehicles, 1);
-            Grid.SetColumn(allVehicles, 1);
+            Grid.SetRow(motorCoaches, 0);
+            Grid.SetColumn(motorCoaches, 2);
+            Grid.SetRow(allVehicles, 0);
+            Grid.SetColumn(allVehicles, 3);
+            Grid.SetRow(goBackButton, 0);
+            Grid.SetColumn(goBackButton, 4);
+            //
             this.buttonGrid.Children.Add(largeTrucks);
             this.buttonGrid.Children.Add(buses);
             this.buttonGrid.Children.Add(motorCoaches);
             this.buttonGrid.Children.Add(allVehicles);
-            kRegion.Content = this.buttonGrid;
-            return kRegion;
+            this.buttonGrid.Children.Add(goBackButton);
+            this.kRegion.Content = this.buttonGrid;
         }
 
         private KinectTileButton CreateTileButton(string Name)
         {
             KinectTileButton ktb = new KinectTileButton();
             ktb.Content = Name;
+            ktb.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            ktb.MaxHeight = this.mainWindow.ActualHeight / 3.75;
+            ktb.MaxWidth = this.mainWindow.ActualHeight / 3.75;
+            ktb.FontSize = this.mainWindow.ActualHeight / 22;
             ktb.Click += VehicleClick;
             ktb.HorizontalLabelAlignment = System.Windows.HorizontalAlignment.Center;
             ktb.VerticalLabelAlignment = System.Windows.VerticalAlignment.Center;
@@ -129,6 +224,16 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine(vehicleType + " selected!");
 #endif
             DataScreen ds = new DataScreen(this.mainWindow, this.sensorChooser, this.state, vehicleType);
+            ds.Show();
+        }
+
+        void GoBackButtonClick(object sender, RoutedEventArgs e)
+        {
+#if (DEBUG)
+            Console.WriteLine("User went back to states screen!");
+#endif
+            StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, this.state.TimeZone);
+            ss.Show();
         }
     }
 }
