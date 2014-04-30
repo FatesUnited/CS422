@@ -27,6 +27,8 @@ namespace CrashFatalityInspector.Views
         private KinectTileButton startButton;
         //
         private double sizeValue;
+        //
+        private Binding regionSensorBinding;
 
         public TitleScreen(Window MainWindow, KinectSensorChooser SensorChooser)
         {
@@ -42,8 +44,9 @@ namespace CrashFatalityInspector.Views
             this.kRegion.Content = this.startButton;
             this.content.Children.Add(kRegion);
             // Bind the Kinect sensor
-            var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
-            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            //var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            this.regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, this.regionSensorBinding);
         }
 
         public void Show()
@@ -96,6 +99,9 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine("Start button clicked!");
 #endif
             ButtonZonesScreen bzs = new ButtonZonesScreen(this.mainWindow, this.sensorChooser);
+            // Clear the binding
+            BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+            // Show the desired screen
             bzs.Show();
         }
     }

@@ -23,6 +23,7 @@ namespace CrashFatalityInspector.Views
         private KinectSensorChooser sensorChooser;
         //
         private Utilities.State state;
+        private string vehicleType;
         //
         private KinectRegion kRegion;
         //
@@ -36,6 +37,8 @@ namespace CrashFatalityInspector.Views
         private double maxEllipseDiameter;
         private double multiplier;
         private int largestDataValue;
+        //
+        private Binding regionSensorBinding;
 
         public DataScreen(Window MainWindow, KinectSensorChooser SensorChooser, Utilities.State State, string VehicleType)
         {
@@ -44,12 +47,14 @@ namespace CrashFatalityInspector.Views
             this.sensorChooser = SensorChooser;
             //
             this.state = State;
+            this.vehicleType = VehicleType;
             this.data = Utilities.Data.SelectDataByStateAndVehicleType(State.Name, VehicleType);
             //
             CreateKinectRegion();
             // Bind the Kinect sensor
-            var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
-            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            //var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            this.regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, this.regionSensorBinding);
         }
 
         public void Show()
@@ -79,7 +84,7 @@ namespace CrashFatalityInspector.Views
             KinectTileButton NavToTitleButton = CreateNavTileButton(Constants.ViewNames.TitleScreen, "home");
             Grid.SetColumn(NavToTitleButton, 0);
             Grid.SetRow(NavToTitleButton, 0);
-            KinectTileButton NavToZoneButton = CreateNavTileButton(Constants.ViewNames.TimeZoneScreen, "time zone");
+            KinectTileButton NavToZoneButton = CreateNavTileButton(Constants.ViewNames.TimeZoneScreen, "region");
             Grid.SetColumn(NavToZoneButton, 1);
             Grid.SetRow(NavToZoneButton, 0);
             KinectTileButton NavToStatesButton = CreateNavTileButton(Constants.ViewNames.StatesScreen, "states");
@@ -96,13 +101,25 @@ namespace CrashFatalityInspector.Views
             //
             this.displayStackPanel.Children.Add(this.navButtonGrid);
             //
+            Label selectedInfo = new Label();
+            selectedInfo.Content = " . " + this.state.TimeZone.ToString() + " region . " + this.state.Name + " . " + this.vehicleType + " . ";
+            selectedInfo.HorizontalAlignment = HorizontalAlignment.Center;
+            selectedInfo.VerticalAlignment = VerticalAlignment.Center;
+            selectedInfo.HorizontalContentAlignment = HorizontalAlignment.Center;
+            selectedInfo.VerticalContentAlignment = VerticalAlignment.Center;
+            selectedInfo.Foreground = Brushes.White;
+            selectedInfo.FontSize = this.mainWindow.ActualHeight / 16;
+            selectedInfo.FontWeight = System.Windows.FontWeights.ExtraBold;
+            //
+            this.displayStackPanel.Children.Add(selectedInfo);
+            //
             this.dataScrollViewer = new KinectScrollViewer();
             this.dataScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
             this.dataScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
             //
             this.dataCanvas = new Canvas();
-            double canvasHeight = this.mainWindow.ActualHeight / 3;
-            this.dataCanvas.Height = this.mainWindow.ActualHeight / 3; ;
+            double canvasHeight = this.mainWindow.ActualHeight / 3.5;
+            this.dataCanvas.Height = this.mainWindow.ActualHeight / 3.5; ;
             double canvasWidth = canvasHeight * Utilities.Data.Years.Count;
             this.dataCanvas.Width = canvasWidth;
             //
@@ -118,33 +135,29 @@ namespace CrashFatalityInspector.Views
                 el.Fill = new LinearGradientBrush(Color.FromRgb(17, 17, 17), Color.FromRgb(200, 200, 200), 90);
                 el.Opacity = 0.5;
                 //
-                Label l = new Label();
-                // Content adjustments
-                if (kvp.Value.ToString().Length <= 1)
-                {
-                    l.Content = "   " + kvp.Value.ToString() + "\n" + kvp.Key;
-                }
-                if (kvp.Value.ToString().Length == 2)
-                {
-                    l.Content = "  " + kvp.Value.ToString() + "\n" + kvp.Key;
-                }
-                if (kvp.Value.ToString().Length == 3)
-                {
-                    l.Content = " " + kvp.Value.ToString() + "\n" + kvp.Key;
-                }
-                if (kvp.Value.ToString().Length >= 4)
-                {
-                    l.Content = kvp.Value.ToString() + "\n" + kvp.Key;
-                }
-                l.Width = kvp.Value / this.multiplier;
-                l.Height = kvp.Value / this.multiplier;
-                l.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-                l.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
-                l.Foreground = Brushes.White;
-                l.FontSize = this.mainWindow.ActualHeight / 30;
-                l.FontWeight = System.Windows.FontWeights.ExtraBold;
+                Label deathLabel = new Label();
+                deathLabel.Content = kvp.Value.ToString();
+                deathLabel.Width = maxEllipseDiameter;
+                deathLabel.Height = maxEllipseDiameter / 2;
+                deathLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                deathLabel.VerticalContentAlignment = System.Windows.VerticalAlignment.Bottom;
+                deathLabel.Foreground = Brushes.Red;
+                deathLabel.FontSize = this.mainWindow.ActualHeight / 20;
+                deathLabel.FontWeight = System.Windows.FontWeights.ExtraBold;
+                Grid.SetColumn(deathLabel, 0);
+                Grid.SetRow(deathLabel, 0);
                 //
-                this.dataBubbles.Add(new DataBubble(el, l, kvp.Value, kvp.Key));
+                Label yearLabel = new Label();
+                yearLabel.Content = kvp.Key.ToString();
+                yearLabel.Width = maxEllipseDiameter;
+                yearLabel.Height = maxEllipseDiameter / 2;
+                yearLabel.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+                yearLabel.VerticalContentAlignment = System.Windows.VerticalAlignment.Top;
+                yearLabel.Foreground = Brushes.White;
+                yearLabel.FontSize = this.mainWindow.ActualHeight / 30;
+                yearLabel.FontWeight = System.Windows.FontWeights.ExtraBold;
+                //
+                this.dataBubbles.Add(new DataBubble(el, deathLabel, yearLabel, kvp.Value, kvp.Key));
             }
             //
             double xPos = 0, xOffset = 0, yPos = 0, yOffset = 0;
@@ -154,26 +167,31 @@ namespace CrashFatalityInspector.Views
                 {
                     xOffset = ((this.maxEllipseDiameter - db.Bubble.Width) / 2);
                     Canvas.SetLeft(db.Bubble, xPos + xOffset);
-                    Canvas.SetLeft(db.DataLabel, xPos + xOffset);
+                    Canvas.SetLeft(db.DeathLabel, xPos);
+                    Canvas.SetLeft(db.YearLabel, xPos);
                 }
                 else
                 {
                     Canvas.SetLeft(db.Bubble, xPos);
-                    Canvas.SetLeft(db.DataLabel, xPos);
+                    Canvas.SetLeft(db.DeathLabel, xPos);
+                    Canvas.SetLeft(db.YearLabel, xPos);
                 }
                 if (db.Bubble.Height != this.maxEllipseDiameter)
                 {
                     yOffset = ((this.maxEllipseDiameter - db.Bubble.Height) / 2);
                     Canvas.SetTop(db.Bubble, yPos + yOffset);
-                    Canvas.SetTop(db.DataLabel, yPos + yOffset);
+                    Canvas.SetTop(db.DeathLabel, yPos);
+                    Canvas.SetTop(db.YearLabel, yPos + (this.maxEllipseDiameter / 2));
                 }
                 else
                 {
                     Canvas.SetTop(db.Bubble, yPos);
-                    Canvas.SetTop(db.DataLabel, yPos);
+                    Canvas.SetTop(db.DeathLabel, yPos);
+                    Canvas.SetTop(db.YearLabel, yPos + (this.maxEllipseDiameter / 2));
                 }
-                this.dataCanvas.Children.Add(db.DataLabel);
                 this.dataCanvas.Children.Add(db.Bubble);
+                this.dataCanvas.Children.Add(db.DeathLabel);
+                this.dataCanvas.Children.Add(db.YearLabel);
                 xPos += this.maxEllipseDiameter;
             }
             //
@@ -187,12 +205,25 @@ namespace CrashFatalityInspector.Views
         {
             KinectTileButton ktb = new KinectTileButton();
             ktb.Name = Name.ToString();
-            ktb.Content = Content;
+            if (Name == Constants.ViewNames.TitleScreen)
+            {
+                ktb.Content = Content;
+            }
+            else if (Name == Constants.ViewNames.VehicleScreen)
+            {
+                ktb.Content = "  select\n" + Content;
+            }
+            else
+            {
+                ktb.Content = "select\n" + Content;
+            }
             ktb.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
             ktb.MaxHeight = this.mainWindow.ActualHeight / 3.75;
             ktb.MaxWidth = this.mainWindow.ActualHeight / 3.75;
             ktb.FontSize = this.mainWindow.ActualHeight / 22;
             ktb.Click += NavButtonClick;
+            ktb.HorizontalContentAlignment = HorizontalAlignment.Center;
+            ktb.VerticalContentAlignment = VerticalAlignment.Center;
             ktb.HorizontalLabelAlignment = System.Windows.HorizontalAlignment.Center;
             ktb.VerticalLabelAlignment = System.Windows.VerticalAlignment.Center;
             ktb.Foreground = Brushes.White;
@@ -204,21 +235,33 @@ namespace CrashFatalityInspector.Views
             if (((KinectTileButton)sender).Name == Constants.ViewNames.TitleScreen.ToString())
             {
                 TitleScreen ts = new TitleScreen(this.mainWindow, this.sensorChooser);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 ts.Show();
             }
             if (((KinectTileButton)sender).Name == Constants.ViewNames.TimeZoneScreen.ToString())
             {
                 ButtonZonesScreen bzs = new ButtonZonesScreen(this.mainWindow, this.sensorChooser);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 bzs.Show();
             }
             if (((KinectTileButton)sender).Name == Constants.ViewNames.StatesScreen.ToString())
             {
                 StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, this.state.TimeZone);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 ss.Show();
             }
             if (((KinectTileButton)sender).Name == Constants.ViewNames.VehicleScreen.ToString())
             {
                 VehicleScreen vs = new VehicleScreen(this.mainWindow, this.sensorChooser, this.state);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 vs.Show();
             }
         }
@@ -227,14 +270,16 @@ namespace CrashFatalityInspector.Views
     class DataBubble
     {
         public Ellipse Bubble { get; set; }
-        public Label DataLabel { get; set; }
+        public Label DeathLabel { get; set; }
+        public Label YearLabel { get; set; }
         public int Data { get; set; }
         public string Year { get; set; }
 
-        public DataBubble(Ellipse Bubble, Label DataLabel, int Data, string Year)
+        public DataBubble(Ellipse Bubble, Label DeathLabel, Label YearLabel, int Data, string Year)
         {
             this.Bubble = Bubble;
-            this.DataLabel = DataLabel;
+            this.DeathLabel = DeathLabel;
+            this.YearLabel = YearLabel;
             this.Data = Data;
             this.Year = Year;
         }

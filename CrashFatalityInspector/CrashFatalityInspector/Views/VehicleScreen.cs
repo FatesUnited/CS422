@@ -28,6 +28,8 @@ namespace CrashFatalityInspector.Views
         private Grid buttonGrid;
         //
         private Utilities.State state;
+        //
+        private Binding regionSensorBinding;
 
         public VehicleScreen(Window MainWindow, KinectSensorChooser SensorChooser, Utilities.State State)
         {
@@ -49,8 +51,9 @@ namespace CrashFatalityInspector.Views
             Grid.SetRow(this.kRegion, 1);
             this.content.Children.Add(this.kRegion);
             // Bind the Kinect sensor
-            var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
-            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            //var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            this.regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, this.regionSensorBinding);
         }
 
         public void Show()
@@ -124,13 +127,16 @@ namespace CrashFatalityInspector.Views
             dataGrid.ColumnDefinitions.Add(cd);
             RowDefinition top = new RowDefinition();
             RowDefinition bot = new RowDefinition();
+            //
+            top.Height = new GridLength(this.mainWindow.ActualHeight / 8);
+            //
             dataGrid.RowDefinitions.Add(top);
             dataGrid.RowDefinitions.Add(bot);
             //
             Label regionLabel = new Label();
             regionLabel.Content = this.state.Name + " _";
             regionLabel.Margin = new Thickness(0, 0, 20, 0);
-            regionLabel.FontSize = this.mainWindow.ActualHeight / 10;
+            regionLabel.FontSize = this.mainWindow.ActualHeight / 15;
             regionLabel.FontFamily = new FontFamily("Veranda");
             regionLabel.Foreground = Brushes.White;
             regionLabel.HorizontalAlignment = HorizontalAlignment.Right;
@@ -140,8 +146,10 @@ namespace CrashFatalityInspector.Views
             dataGrid.Children.Add(regionLabel);
             //
             Label regionInfo = new Label();
-            regionInfo.Content = "+some additional info\r\n+some additional info\r\n+some additional info";
-            regionInfo.FontSize = this.mainWindow.ActualHeight / 23.333333333333333333333333333333;
+            regionInfo.Content = "+population:\t\t" + this.state.Population + "\r\n+poplation rank:\t\t" + this.state.PopulationRank + "\r\n+road milage:\t\t" + this.state.Milage + "\r\n+road milage rank:\t" + this.state.MilageRank + "\r\n+select a vehicle type";
+            regionInfo.HorizontalContentAlignment = HorizontalAlignment.Right;
+            regionInfo.VerticalContentAlignment = VerticalAlignment.Bottom;
+            regionInfo.FontSize = this.mainWindow.ActualHeight / 30;
             regionInfo.Margin = new Thickness(0, 0, 20, 0);
             regionInfo.FontFamily = new FontFamily("Veranda");
             regionInfo.Foreground = Brushes.White;
@@ -224,6 +232,9 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine(vehicleType + " selected!");
 #endif
             DataScreen ds = new DataScreen(this.mainWindow, this.sensorChooser, this.state, vehicleType);
+            // Clear the binding
+            BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+            // Show the desired screen
             ds.Show();
         }
 
@@ -233,6 +244,9 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine("User went back to states screen!");
 #endif
             StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, this.state.TimeZone);
+            // Clear the binding
+            BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+            // Show the desired screen
             ss.Show();
         }
     }

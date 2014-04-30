@@ -64,7 +64,7 @@ namespace CrashFatalityInspector.Utilities
                         stateData = line.Split(new char[] { ',' });
                         try
                         {
-                            states.Add(new State(stateData[0], stateData[1], stateData[0] + ".png"));
+                            states.Add(new State(stateData[0], stateData[1], stateData[0] + ".png", stateData[2], stateData[3], stateData[4], stateData[5]));
                         }
                         catch (ArgumentException e)
                         {
@@ -283,7 +283,15 @@ namespace CrashFatalityInspector.Utilities
 
         public string Image { get; set; }
 
-        public State(string Name, string TimeZone, string Image)
+        public string Population { get; set; }
+
+        public string PopulationRank { get; set; }
+
+        public string Milage { get; set; }
+
+        public string MilageRank { get; set; }
+
+        public State(string Name, string TimeZone, string Image, string Population, string PopulationRank, string Milage, string MilageRank)
         {
             this.Name = Name;
             if (TimeZone.Equals(Constants.TimeZones.Pacific.ToString()))
@@ -303,6 +311,18 @@ namespace CrashFatalityInspector.Utilities
                 this.TimeZone = Constants.TimeZones.Eastern;
             }
             this.Image = Image;
+            if (Population.Contains('.'))
+            {
+                Population = Population.Replace('.', ',');
+            }
+            this.Population = Population;
+            this.PopulationRank = PopulationRank;
+            if (Milage.Contains('.'))
+            {
+                Milage = Milage.Replace('.', ',');
+            }
+            this.Milage = Milage;
+            this.MilageRank = MilageRank;
         }
 
         public override string ToString()

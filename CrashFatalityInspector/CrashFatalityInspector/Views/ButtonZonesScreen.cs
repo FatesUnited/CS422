@@ -28,6 +28,8 @@ namespace CrashFatalityInspector.Views
         private KinectTileButton mountainButton;
         private KinectTileButton centralButton;
         private KinectTileButton easternButton;
+        //
+        private Binding regionSensorBinding;
 
         public ButtonZonesScreen(Window MainWindow, KinectSensorChooser SensorChooser)
         {
@@ -40,8 +42,9 @@ namespace CrashFatalityInspector.Views
             // Set up the display
             this.kRegion.Content = this.content;
             // Bind the Kinect sensor
-            var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
-            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            //var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            this.regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, this.regionSensorBinding);
         }
 
         public void Show()
@@ -134,6 +137,9 @@ namespace CrashFatalityInspector.Views
                 Console.WriteLine("User clicked " + Constants.TimeZones.Pacific.ToString());
 #endif
                 StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, Constants.TimeZones.Pacific);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 ss.Show();
             }
             if (((KinectTileButton)sender).Name == Constants.TimeZones.Mountain.ToString())
@@ -142,6 +148,9 @@ namespace CrashFatalityInspector.Views
                 Console.WriteLine("User clicked " + Constants.TimeZones.Mountain.ToString());
 #endif
                 StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, Constants.TimeZones.Mountain);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 ss.Show();
             }
             if (((KinectTileButton)sender).Name == Constants.TimeZones.Central.ToString())
@@ -150,6 +159,9 @@ namespace CrashFatalityInspector.Views
                 Console.WriteLine("User clicked " + Constants.TimeZones.Central.ToString());
 #endif
                 StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, Constants.TimeZones.Central);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 ss.Show();
             }
             if (((KinectTileButton)sender).Name == Constants.TimeZones.Eastern.ToString())
@@ -158,6 +170,9 @@ namespace CrashFatalityInspector.Views
                 Console.WriteLine("User clicked " + Constants.TimeZones.Eastern.ToString());
 #endif
                 StatesScreen ss = new StatesScreen(this.mainWindow, this.sensorChooser, Constants.TimeZones.Eastern);
+                // Clear the binding
+                BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+                // Show the desired screen
                 ss.Show();
             }
         }

@@ -30,6 +30,8 @@ namespace CrashFatalityInspector.Views
         //
         private List<Utilities.State> states;
         private Constants.TimeZones timeZone;
+        //
+        private Binding regionSensorBinding;
 
         public StatesScreen(Window MainWindow, KinectSensorChooser SensorChooser, Constants.TimeZones TimeZone)
         {
@@ -61,8 +63,9 @@ namespace CrashFatalityInspector.Views
             Grid.SetRow(this.kRegion, 1);
             this.content.Children.Add(this.kRegion);
             // Bind the Kinect sensor
-            var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
-            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            //var regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            this.regionSensorBinding = new Binding("Kinect") { Source = SensorChooser };
+            BindingOperations.SetBinding(this.kRegion, KinectRegion.KinectSensorProperty, this.regionSensorBinding);
         }
 
         public void Show()
@@ -185,7 +188,9 @@ namespace CrashFatalityInspector.Views
             dataGrid.Children.Add(regionLabel);
             //
             Label regionInfo = new Label();
-            regionInfo.Content = "+some additional info\r\n+some additional info\r\n+some additional info";
+            //regionInfo.Content = "+some additional info\r\n+some additional info\r\n+some additional info";
+            regionInfo.HorizontalContentAlignment = HorizontalAlignment.Right;
+            regionInfo.Content = "+select a state";
             regionInfo.FontSize = this.mainWindow.ActualHeight / 23.333333333333333333333333333333;
             regionInfo.Margin = new Thickness(0, 0, 20, 0);
             regionInfo.FontFamily = new FontFamily("Veranda");
@@ -267,6 +272,9 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine("User went back to time zone screen!");
 #endif
             ButtonZonesScreen bzs = new ButtonZonesScreen(this.mainWindow, this.sensorChooser);
+            // Clear the binding
+            BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+            // Show the desired screen
             bzs.Show();
         }
 
@@ -277,6 +285,9 @@ namespace CrashFatalityInspector.Views
             Console.WriteLine(s.Name + " selected!");
 #endif
             VehicleScreen vs = new VehicleScreen(this.mainWindow, this.sensorChooser, s);
+            // Clear the binding
+            BindingOperations.ClearBinding(this.kRegion, KinectRegion.KinectSensorProperty);
+            // Show the desired screen
             vs.Show();
         }
     }

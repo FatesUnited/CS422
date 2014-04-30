@@ -33,7 +33,7 @@ namespace CrashFatalityInspector
 #endif
             InitializeComponent();
             //
-            this.WindowState = System.Windows.WindowState.Maximized;
+            //this.WindowState = System.Windows.WindowState.Maximized;
             this.Closing += MainWindow_Closing;
             //
             string exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
